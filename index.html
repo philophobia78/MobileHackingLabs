@@ -1,28 +1,39 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>DSBridge Test</title>
-</head>
 <body>
-  <h1>DSBridge Test</h1>
-  <pre id="out">page loaded</pre>
-
+<div>DSBridge test</div>
 <script>
 function log(x) {
   document.body.innerHTML += "<pre>" + x + "</pre>";
 }
 
+log("loaded");
 log("typeof _dsbridge = " + typeof _dsbridge);
 
-if (typeof _dsbridge !== "undefined") {
+if (typeof _dsbridge === "undefined") {
+  log("_dsbridge missing");
+} else {
   log("keys: " + Object.keys(_dsbridge).join(", "));
-  if (typeof _dsbridge.call === "function") {
-    _dsbridge.call("getUserAuth", {}, function (res) {
-      log("result: " + (typeof res === "string" ? res : JSON.stringify(res)));
+  log("typeof _dsbridge.call = " + typeof _dsbridge.call);
+
+  try {
+    log("trying getUserAuth...");
+    _dsbridge.call("getUserAuth", "{}", function (res) {
+      log("callback from getUserAuth");
+      log("res = " + (typeof res === "string" ? res : JSON.stringify(res)));
     });
-  } else {
-    log("_dsbridge.call is not a function");
+  } catch (e) {
+    log("getUserAuth failed: " + e);
+  }
+
+  try {
+    log("trying JSApi.getUserAuth...");
+    _dsbridge.call("JSApi.getUserAuth", "{}", function (res) {
+      log("callback from JSApi.getUserAuth");
+      log("res = " + (typeof res === "string" ? res : JSON.stringify(res)));
+    });
+  } catch (e) {
+    log("JSApi.getUserAuth failed: " + e);
   }
 }
 </script>
