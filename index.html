@@ -8,18 +8,21 @@
   <h1>DSBridge Test</h1>
   <pre id="out">page loaded</pre>
 
- <script>
-function out(x) {
+<script>
+function log(x) {
   document.body.innerHTML += "<pre>" + x + "</pre>";
 }
 
-out("loaded");
-out("typeof dsBridge = " + typeof dsBridge);
-out("typeof window.dsBridge = " + typeof window.dsBridge);
+log("typeof _dsbridge = " + typeof _dsbridge);
 
-for (const k in window) {
-  if (k.toLowerCase().includes("bridge")) {
-    out("bridge-like global: " + k);
+if (typeof _dsbridge !== "undefined") {
+  log("keys: " + Object.keys(_dsbridge).join(", "));
+  if (typeof _dsbridge.call === "function") {
+    _dsbridge.call("getUserAuth", {}, function (res) {
+      log("result: " + (typeof res === "string" ? res : JSON.stringify(res)));
+    });
+  } else {
+    log("_dsbridge.call is not a function");
   }
 }
 </script>
