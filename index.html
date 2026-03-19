@@ -6,7 +6,10 @@
 function log(x) {
   document.getElementById("out").textContent += "\n" + x;
 }
- if (cb) {
+
+function dsCall(method, data, cb) {
+  const payload = { data: data || {} };
+   if (cb) {
     const cbName = "dscb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
     window[cbName] = function (result) {
       try {
@@ -18,8 +21,6 @@ function log(x) {
     payload._dscbstub = cbName;
   }
   
-function dsCall(method, data, cb) {
-  const payload = { data: data || {} };
   try {
     const ret = _dsbridge.call(method, JSON.stringify(payload));
     log("raw return: " + ret);
