@@ -8,35 +8,20 @@
   <h1>DSBridge Test</h1>
   <pre id="out">page loaded</pre>
 
-  <script>
-    function log(msg) {
-      document.getElementById("out").textContent += "\n" + msg;
-    }
+ <script>
+function out(x) {
+  document.body.innerHTML += "<pre>" + x + "</pre>";
+}
 
-    window.onerror = function (msg, src, line, col, err) {
-      log("JS ERROR: " + msg + " @ " + line + ":" + col);
-    };
+out("loaded");
+out("typeof dsBridge = " + typeof dsBridge);
+out("typeof window.dsBridge = " + typeof window.dsBridge);
 
-    log("script started");
-    log("typeof dsBridge = " + typeof dsBridge);
-
-    try {
-      if (typeof dsBridge === "undefined") {
-        log("dsBridge is not available");
-      } else {
-        log("calling getUserAuth...");
-        dsBridge.call("getUserAuth", {}, function (res) {
-          log("callback fired");
-          try {
-            log("result = " + (typeof res === "string" ? res : JSON.stringify(res)));
-          } catch (e) {
-            log("stringify failed: " + e);
-          }
-        });
-      }
-    } catch (e) {
-      log("CALL FAILED: " + e);
-    }
-  </script>
+for (const k in window) {
+  if (k.toLowerCase().includes("bridge")) {
+    out("bridge-like global: " + k);
+  }
+}
+</script>
 </body>
 </html>
