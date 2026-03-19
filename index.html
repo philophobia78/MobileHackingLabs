@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>DSBridge Test</title>
+</head>
+<body>
+  <h1>DSBridge Test</h1>
+  <pre id="out">page loaded</pre>
+
+  <script>
+    function log(msg) {
+      document.getElementById("out").textContent += "\n" + msg;
+    }
+
+    window.onerror = function (msg, src, line, col, err) {
+      log("JS ERROR: " + msg + " @ " + line + ":" + col);
+    };
+
+    log("script started");
+    log("typeof dsBridge = " + typeof dsBridge);
+
+    try {
+      if (typeof dsBridge === "undefined") {
+        log("dsBridge is not available");
+      } else {
+        log("calling getUserAuth...");
+        dsBridge.call("getUserAuth", {}, function (res) {
+          log("callback fired");
+          try {
+            log("result = " + (typeof res === "string" ? res : JSON.stringify(res)));
+          } catch (e) {
+            log("stringify failed: " + e);
+          }
+        });
+      }
+    } catch (e) {
+      log("CALL FAILED: " + e);
+    }
+  </script>
+</body>
+</html>
