@@ -1,41 +1,48 @@
 <!doctype html>
 <html>
 <body>
-<div>DSBridge test</div>
+<pre id="out">loaded</pre>
 <script>
 function log(x) {
-  document.body.innerHTML += "<pre>" + x + "</pre>";
+  document.getElementById("out").textContent += "\n" + x;
 }
 
-log("loaded");
+function dsCall(method, data, cb) {
+  if (typeof _dsbridge === "undefined" || typeof _dsbridge.call !== "function") {
+    log("_dsbridge not available");
+    return;
+  }
+
+  const payload = { data: data || {} };
+
+  if (cb) {
+    const cbName = "dscb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+    window[cbName] = function (result) {
+      try {
+        cb(result);
+      } finally {
+        try { delete window[cbName]; } catch (e) {}
+      }
+    };
+    payload._dscbstub = cbName;
+  }
+
+  try {
+    const ret = _dsbridge.call(method, JSON.stringify(payload));
+    log("raw return: " + ret);
+    return ret;
+  } catch (e) {
+    log("call error: " + e);
+  }
+}
+
 log("typeof _dsbridge = " + typeof _dsbridge);
+log("typeof _dsbridge.call = " + (typeof _dsbridge !== "undefined" ? typeof _dsbridge.call : "n/a"));
 
-if (typeof _dsbridge === "undefined") {
-  log("_dsbridge missing");
-} else {
-  log("keys: " + Object.keys(_dsbridge).join(", "));
-  log("typeof _dsbridge.call = " + typeof _dsbridge.call);
-
-  try {
-    log("trying getUserAuth...");
-    _dsbridge.call("getUserAuth", "{}", function (res) {
-      log("callback from getUserAuth");
-      log("res = " + (typeof res === "string" ? res : JSON.stringify(res)));
-    });
-  } catch (e) {
-    log("getUserAuth failed: " + e);
-  }
-
-  try {
-    log("trying JSApi.getUserAuth...");
-    _dsbridge.call("JSApi.getUserAuth", "{}", function (res) {
-      log("callback from JSApi.getUserAuth");
-      log("res = " + (typeof res === "string" ? res : JSON.stringify(res)));
-    });
-  } catch (e) {
-    log("JSApi.getUserAuth failed: " + e);
-  }
-}
+dsCall("getUserAuth", {}, function (res) {
+  log("callback fired");
+  log("result = " + (typeof res === "string" ? res : JSON.stringify(res)));
+});
 </script>
 </body>
 </html>
